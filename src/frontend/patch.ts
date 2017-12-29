@@ -1,17 +1,7 @@
-// TODO: Ok this has become a mess, need to clean this
-
 import {dirname, resolve} from 'path'
 
-import {startIPCServer} from '../multi-process/ipc/server'
-
-export function startServer(bundler: any) {
-	if(!process.send) {
-		startIPCServer(bundler)
-	}
-}
-
 /**
- * When generating files on the fly (eg. Angular) we need to
+ * When generating files on the fly on AOT mode we need to
  * override Parcel cache and resolver for it to work properly
  */
 export function injectAngularSupport(bundler: any) {

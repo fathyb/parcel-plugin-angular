@@ -1,10 +1,12 @@
 import JSAsset = require('parcel-bundler/lib/assets/JSAsset')
 
-import {Configuration, loadConfiguration} from '../../../backend/config-loader'
-import {Transpiler} from '../../../backend/transpiler'
+import {Configuration, loadConfiguration, Transpiler} from 'parcel-plugin-typescript/exports'
 
-import {processResource} from '../../loaders/template'
-import {TypeCheckFile} from '../../multi-process/ipc/client'
+import {replaceResources} from '../../backend/transformers/resources'
+import {IPCClient} from '../../backend/worker/client'
+import {Resources} from '../../interfaces'
+import {getFileResources, processResource} from '../loaders/template'
+import {collectDependencies} from '../utils/collect-dependencies'
 
 declare global {
 	interface PreProcessor {
@@ -17,6 +19,10 @@ declare global {
 export = class TSAsset extends JSAsset {
 	private readonly config: Promise<Configuration>
 	private readonly transpiler: Promise<Transpiler>
+	private readonly resources: Resources = {
+		bundled: [],
+		external: []
+	}
 
 	private readonly templatePreProcessor: PreProcessor = {
 		findExpr: /_PRAGMA_PARCEL_TYPESCRIPT_PLUGIN_PREPROCESS_TEMPLATE\(([^\)]*)\)/g,
@@ -34,21 +40,30 @@ export = class TSAsset extends JSAsset {
 		super(name, pkg, options)
 
 		this.config = loadConfiguration(name)
-		this.transpiler = this.config.then(config => new Transpiler(config))
+		this.transpiler = this.config.then(config => new Transpiler(config, [replaceResources(() => true)]))
 	}
 
 	public async parse(code: string) {
-		const config = await this.config
+		const {path: tsConfig} = await this.config
 
-		TypeCheckFile(config.path, this.name)
+		IPCClient.typeCheck({tsConfig, file: this.name})
 
 		const transpiler = await this.transpiler
-		const {sources} = transpiler.transpile(code, this.name, 'angular')
+		const {sources} = transpiler.transpile(code, this.name)
+
+		this.resources.bundled.splice(0)
+		this.resources.external.splice(0)
 
 		this.contents = await this.preProcessResources(sources.js, this.templatePreProcessor, this.stylePreProcessor)
 
 		// Parse result as ast format through babylon
 		return super.parse(this.contents)
+	}
+
+	public collectDependencies() {
+		super.collectDependencies()
+
+		collectDependencies(this, this.resources)
 	}
 
 	private async preProcessResources(code: string, ...preProcessors: PreProcessor[]): Promise<string> {
@@ -75,6 +90,9 @@ export = class TSAsset extends JSAsset {
 						const path = new Buffer(match!, 'base64').toString('utf-8')
 
 						resources[match!] = await preProcessor.transform(path)
+
+						this.resources.external.push(...getFileResources(path))
+						this.resources.bundled.push(path)
 					})
 				)
 				.reduce((a, b) => a.concat(b), [])

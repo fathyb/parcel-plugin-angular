@@ -1,6 +1,6 @@
 import {dirname, resolve} from 'path'
 
-import {TemplateAsset} from '../assets/angular/template'
+import {TemplateAsset} from '../assets/template'
 
 interface CacheEntry {
 	original: string
