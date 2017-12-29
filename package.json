@@ -1,10 +1,10 @@
 {
-  "name": "parcel-plugin-typescript",
-  "version": "0.3.0",
-  "description": "Enhanced TypeScript support for Parcel bundler",
+  "name": "parcel-plugin-angular",
+  "version": "0.0.1-next.0",
+  "description": "Angular support for Parcel bundler",
   "author": "Fathy Boundjadj <fathy.boundjadj@gmail.com>",
   "license": "MIT",
-  "repository": "https://github.com/fathyb/parcel-plugin-typescript.git",
+  "repository": "https://github.com/fathyb/parcel-plugin-angular.git",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
   "files": [
@@ -18,7 +18,7 @@
   },
   "peerDependencies": {
     "parcel-bundler": "^1.1.0",
-    "typescript": "^2.4.0"
+    "typescript": ">=2.4.2 <2.6"
   },
   "dependencies": {
     "@babel/code-frame": "^7.0.0-beta.34",
@@ -28,8 +28,11 @@
     "magic-string": "^0.22.4",
     "node-ipc": "^9.1.1",
     "normalize-path": "^2.1.1",
+    "parcel-plugin-typescript": "0.4.0-next.6",
     "posthtml": "^0.11.0",
     "posthtml-parser": "~0.3.0",
+    "request": "^2.34",
+    "request-promise": "^4.2.2",
     "resolve": "^1.5.0",
     "semver": "^5.4.1",
     "source-map": "^0.6.1",
@@ -42,6 +45,7 @@
     "@types/find-up": "^2.1.1",
     "@types/node": "~7.0.0",
     "@types/node-ipc": "^9.1.0",
+    "@types/request-promise": "^4.1.39",
     "@types/resolve": "^0.0.4",
     "@types/semver": "^5.4.0",
     "husky": "^0.14.3",
@@ -50,6 +54,6 @@
     "standard-version": "^4.2.0",
     "tslint": "^5.8.0",
     "tslint-eslint-rules": "^4.1.1",
-    "typescript": "~2.5.0"
+    "typescript": "^2.5.0"
   }
 }

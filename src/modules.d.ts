@@ -1,4 +1,4 @@
-declare module 'parcel-bundler/lib/assets/JSAsset' {
+declare module 'parcel-bundler/src/assets/JSAsset' {
 	class JSAsset {
 		public name: string
 		public contents?: string
@@ -6,6 +6,7 @@ declare module 'parcel-bundler/lib/assets/JSAsset' {
 		public package?: any
 		public dependencies: Map<string, string>
 		public depAssets: Map<string, any>
+		public isES6Module: boolean
 
 		constructor(name: string, pkg: string, options: any)
 
@@ -17,6 +18,17 @@ declare module 'parcel-bundler/lib/assets/JSAsset' {
 	}
 
 	export = JSAsset
+}
+declare module 'parcel-bundler/lib/assets/JSAsset' {
+	import JSAsset = require('parcel-bundler/src/assets/JSAsset')
+
+	export = JSAsset
+}
+
+declare module 'parcel-bundler/src/assets/HTMLAsset' {
+	import HTMLAsset = require('parcel-bundler/lib/assets/HTMLAsset')
+
+	export = HTMLAsset
 }
 declare module 'parcel-bundler/lib/assets/HTMLAsset' {
 	class JSAsset {

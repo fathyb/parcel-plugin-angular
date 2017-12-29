@@ -4,19 +4,20 @@ import {createProgram} from '@angular/compiler-cli/src/transformers/program'
 
 import * as ts from 'typescript'
 
-import {TranspileResult} from '../../../interfaces'
-import {reportDiagnostics} from '../../reporter'
-import {removeDecorators} from '../../transformers/angular/remove-decorators'
-import {replaceBootstrap} from '../../transformers/angular/replace-bootstrap'
-import {findResources} from '../../transformers/angular/resources'
-import {PathTransform} from '../../transformers/paths'
+import {PathTransform} from 'parcel-plugin-typescript/exports'
+
+import {CompileResult} from '../../interfaces'
+import {reportDiagnostics} from '../reporter'
+import {removeDecorators} from '../transformers/remove-decorators'
+import {replaceBootstrap} from '../transformers/replace-bootstrap'
+import {findResources} from '../transformers/resources'
 
 import {resolveEntryModuleFromMain} from './entry-resolver'
 import {AngularCompilerHost} from './host'
 import {generateRouteLoader} from './route'
 
 export class AngularCompiler {
-	private readonly host: AngularCompilerHost
+	public readonly host: AngularCompilerHost
 	private readonly config: ParsedConfiguration
 	private readonly resources: {[file: string]: string[]} = {}
 	private readonly transformers: Array<ts.TransformerFactory<ts.SourceFile>> = []
@@ -36,7 +37,7 @@ export class AngularCompiler {
 		this.transformers.push(PathTransform(options))
 	}
 
-	public async transpile(path: string): Promise<TranspileResult & {resources: string[]}> {
+	public async compile(path: string): Promise<CompileResult> {
 		if(this.entryFile === null) {
 			// We assume the file file included by the project is the entry
 			// It is used to inject the generated SystemJS loader

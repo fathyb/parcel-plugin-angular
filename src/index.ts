@@ -1,53 +1,38 @@
-import {injectAngularSupport, startServer} from './frontend/injector/master'
+import {getSocketPath} from 'parcel-plugin-typescript/exports'
 
-import {getPluginConfig, hasAngularInstalled} from './utils/environment'
+import {AngularServer} from './backend/worker'
+import {injectAngularSupport} from './frontend/patch'
+import {getPluginConfig} from './utils/environment'
 
 export = (bundler: any) => {
 	const {watch} = bundler.options
-	let needIPC = true
+	const config = getPluginConfig()
+	let tsAsset: string|null = null
 
-	console.log('\n\nloading plugin\n\n')
-	const {angular: angularOptions, transpileOnly} = getPluginConfig()
+	if((watch && config.watch === 'aot') || (!watch && config.build === 'aot')) {
+		// Workaround for the resolving/cache issues with Angular generated files
+		injectAngularSupport(bundler)
 
-	// if this is an Angular project and AOT is enabled
-	if(hasAngularInstalled()) {
-		let tsAsset: string|null = null
+		bundler.options.__closureKeepJSAsset = true
+		// We register .js files for the generated ngfactory/ngstyles files
+		bundler.addAssetType('js', require.resolve('./frontend/assets/virtual'))
 
-		if((watch && angularOptions.watch === 'aot') || (!watch && angularOptions.build === 'aot')) {
-			// Workaround for the resolving/cache issues with Angular generated files
-			injectAngularSupport(bundler)
-
-			// We register .js files for the generated ngfactory/ngstyles files
-			bundler.addAssetType('js', require.resolve('./frontend/assets/angular/virtual'))
-
-			tsAsset = require.resolve('./frontend/assets/angular/aot')
-		}
-		else {
-			tsAsset = require.resolve('./frontend/assets/angular/jit')
-		}
-
-		bundler.addAssetType('ts', tsAsset)
-		bundler.addAssetType('tsx', tsAsset)
+		tsAsset = require.resolve('./frontend/assets/aot')
 	}
 	else {
-		if(transpileOnly) {
-			needIPC = false
-
-			bundler.addAssetType('ts', require.resolve('./frontend/assets/transpile'))
-			bundler.addAssetType('tsx', require.resolve('./frontend/assets/transpile'))
-		}
-		else {
-			// On watch mode we transpile in the asset process and type-check in a dedicated process
-			// Else we transpile and type-check using a dedicated process
-			const tsAsset = require.resolve(`./frontend/assets/${watch ? 'forked' : 'typescript'}`)
-
-			bundler.addAssetType('ts', tsAsset)
-			bundler.addAssetType('tsx', tsAsset)
-		}
+		tsAsset = require.resolve('./frontend/assets/jit')
 	}
 
-	if(needIPC) {
-		// We start our IPC server for multi-process
-		startServer(bundler)
+	// process.send is only defined on the main process
+	if(!process.send) {
+		// TODO: fix this
+		getSocketPath('angular')
+
+		const server = new AngularServer(bundler)
+
+		bundler.on('buildEnd', () => server.close())
 	}
+
+	bundler.addAssetType('ts', tsAsset)
+	bundler.addAssetType('tsx', tsAsset)
 }

@@ -17,7 +17,7 @@ window.System = {
 	import(module) {
 		${routes.map(route =>
 			`if(module === '${parseNgModule(route.route)}') {
-				return import('${relative(mainDir, parseNgModule(route.referencedModule.filePath))}')
+				return import('./${relative(mainDir, parseNgModule(route.referencedModule.filePath))}')
 			}`
 		).join('\n')}
 

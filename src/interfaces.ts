@@ -1,31 +1,32 @@
-import {Diagnostic} from 'typescript'
-
-export type Message<T extends string, U extends {} = {}> = U & {
-	type: T
-}
-
-export type CheckFileMessage = Message<'check-file', {
-	file: string
-}>
-export type AngularCompilerMessage = Message<'angular:compile', {
+export interface CompileRequest {
 	file: string
 	tsConfig: string
-}>
-
-export interface InjectedMessage {
-	__parcelTypeScript: CheckFileMessage | AngularCompilerMessage
 }
 
-export interface TranspileResult {
+export interface CompileResult {
 	sources: {
 		js: string
 		sourceMap?: string
 	}
+	resources: string[]
 }
 
-export interface TypeCheckResult {
-	syntacticDiagnostics: Diagnostic[]
-	semanticDiagnostics: Diagnostic[]
+export interface WorkerRequest {
+	typeCheck: CompileRequest
+	compile: CompileRequest
+	readVirtualFile: string
+}
 
-	transpile(): TranspileResult
+export interface WorkerResponse {
+	typeCheck: void
+	compile: CompileResult
+	readVirtualFile: string|null
+}
+
+export interface ServerRequest extends WorkerRequest {
+	processResource: string
+}
+
+export interface ServerResponse extends WorkerResponse {
+	processResource: string
 }

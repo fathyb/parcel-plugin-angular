@@ -1,10 +1,8 @@
 import {dirname, relative} from 'path'
 
-import JSAsset = require('parcel-bundler/lib/assets/JSAsset')
+import {Configuration, JSAsset, loadConfiguration} from 'parcel-plugin-typescript/exports'
 
-import {Configuration, loadConfiguration} from '../../../backend/config-loader'
-
-import {CompileAngularFile} from '../../multi-process/ipc/client'
+import {IPCClient} from '../../backend/worker/client'
 
 export = class AngularAOTTSAsset extends JSAsset {
 	private config: Promise<Configuration>
@@ -23,6 +21,14 @@ export = class AngularAOTTSAsset extends JSAsset {
 	public collectDependencies() {
 		super.collectDependencies()
 
+		if(this.options.__minifyUsingClosure) {
+			// Keep ES6 imports/exports to improve Closure's tree-shaking
+			this.isES6Module = false
+
+			// Disable Uglify, for performances and to keep types annotations
+			this.options.minify = false
+		}
+
 		const {resources} = this
 
 		if(!resources) {
@@ -34,7 +40,7 @@ export = class AngularAOTTSAsset extends JSAsset {
 		resources.forEach(resource => {
 			let path = relative(dir, resource)
 
-			if(!/^\./.test(path)) {
+			if(!/^\.\//.test(path)) {
 				path = `./${path}`
 			}
 
@@ -43,8 +49,8 @@ export = class AngularAOTTSAsset extends JSAsset {
 	}
 
 	public async parse() {
-		const config = await this.config
-		const result = await CompileAngularFile(config.path, this.name)
+		const {path: tsConfig} = await this.config
+		const result = await IPCClient.compile({tsConfig, file: this.name})
 
 		this.resources = result.resources
 		this.contents = result.sources.js

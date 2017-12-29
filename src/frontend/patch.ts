@@ -1,14 +1,4 @@
-// TODO: Ok this has become a mess, need to clean this
-
 import {dirname, resolve} from 'path'
-
-import {startIPCServer} from '../multi-process/ipc/server'
-
-export function startServer(bundler: any) {
-	if(!process.send) {
-		startIPCServer(bundler)
-	}
-}
 
 /**
  * When generating files on the fly (eg. Angular) we need to

@@ -1,6 +1,6 @@
 import {dirname, resolve} from 'path'
 
-import {TemplateAsset} from '../assets/angular/template'
+import {TemplateAsset} from '../assets/template'
 
 interface CacheEntry {
 	original: string
@@ -37,7 +37,7 @@ export async function processResource(
 
 	fileResources.set(file, Array
 		.from(asset.dependencies.keys() as string[])
-		.filter(key => !/^_css_loader/.test(key))
+		// .filter(key => !/^_css_loader/.test(key))
 		.map(k => resolve(dirname(file), k))
 	)
 

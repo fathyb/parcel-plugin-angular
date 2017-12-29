@@ -1,10 +1,10 @@
 import JSAsset = require('parcel-bundler/lib/assets/JSAsset')
 
-import {Configuration, loadConfiguration} from '../../../backend/config-loader'
-import {Transpiler} from '../../../backend/transpiler'
+import {Configuration, loadConfiguration, Transpiler} from 'parcel-plugin-typescript/exports'
 
-import {processResource} from '../../loaders/template'
-import {TypeCheckFile} from '../../multi-process/ipc/client'
+import {replaceResources} from '../../backend/transformers/resources'
+import {IPCClient} from '../../backend/worker/client'
+import {processResource} from '../loaders/template'
 
 declare global {
 	interface PreProcessor {
@@ -34,16 +34,16 @@ export = class TSAsset extends JSAsset {
 		super(name, pkg, options)
 
 		this.config = loadConfiguration(name)
-		this.transpiler = this.config.then(config => new Transpiler(config))
+		this.transpiler = this.config.then(config => new Transpiler(config, [replaceResources(() => true)]))
 	}
 
 	public async parse(code: string) {
-		const config = await this.config
+		const {path: tsConfig} = await this.config
 
-		TypeCheckFile(config.path, this.name)
+		IPCClient.typeCheck({tsConfig, file: this.name})
 
 		const transpiler = await this.transpiler
-		const {sources} = transpiler.transpile(code, this.name, 'angular')
+		const {sources} = transpiler.transpile(code, this.name)
 
 		this.contents = await this.preProcessResources(sources.js, this.templatePreProcessor, this.stylePreProcessor)
 
