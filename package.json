@@ -28,7 +28,7 @@
     "comment-json": "^1.1.3",
     "find-up": "^2.1.0",
     "normalize-path": "^2.1.1",
-    "parcel-plugin-typescript": "0.4.0-next.10",
+    "parcel-plugin-typescript": "^0.4.0",
     "posthtml": "^0.11.0",
     "posthtml-parser": "~0.3.0",
     "request": "^2.34",
