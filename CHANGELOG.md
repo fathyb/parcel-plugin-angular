@@ -34,50 +34,7 @@ All notable changes to this project will be documented in this file. See [standa
   ```
 
 <a name="0.2.5"></a>
-# [0.2.5](https://github.com/fathyb/parcel-plugin-typescript/compare/v0.2.4...v0.2.5) (2017-12-21)
-
-
-### Bug Fixes
-
-* **resolve:** correctly map directory indices ([a543347](https://github.com/fathyb/parcel-plugin-typescript/commit/a543347))
-
-<a name="0.3.0"></a>
-# [0.3.0](https://github.com/fathyb/parcel-plugin-typescript/compare/v0.2.4...v0.3.0) (2017-12-21)
-
-**NOTE: do not use this release (it's not tagged as latest anyway), the Angular support will be moved out of this plugin in the next days, this plugin will only provide TypeScript support.**
-
-🎉 First Angular AOT support 🎉
-
-### Features
-
-- **Angular**
-  - Compilation using AOT compiler
-  - Support lazy-loading (AOT only)
-  - Preprocess templates and style using Parcel (`templateUrl` or `styleUrls` only)
-  - Experimental incremental AOT build on watch mode
-  - Decorators are removed in AOT for smaller builds
-- **Options**: you can now pass options to the plugin in `tsconfig.json`:
-  ```js
-  {
-    "compilerOptions": {
-      "strict": true
-    },
-    // the plugin options
-    "parcelTsPluginOptions": {
-      // If true type-checking is disabled
-      "transpileOnly": false,
-      
-      // Angular options
-      "angular": {
-        // What compiler should we use when watching or serving
-        "watch": "jit",
-
-        // What compiler should we use when building (parcel build)
-        "build": "aot"
-      }
-    }
-  }
-  ```
+## [0.2.5](https://github.com/fathyb/parcel-plugin-typescript/compare/v0.2.4...v0.2.5) (2017-12-21)
 
 ### Bug Fixes
 
