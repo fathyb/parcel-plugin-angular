@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/fathyb/parcel-plugin-angular/compare/v0.2.4...v0.4.0) (2018-01-05)
+
+
+### Bug Fixes
+
+🎉 First Angular AOT support 🎉
+
+### Features
+
+- **Angular**
+  - Compilation using AOT compiler
+  - Support lazy-loading (AOT only)
+  - Preprocess templates and style using Parcel (`templateUrl` or `styleUrls` only)
+  - Experimental incremental AOT build on watch mode
+  - Decorators are removed in AOT for smaller builds
+- **Options**: you can now pass options to the plugin in `tsconfig.json`:
+  ```js
+  {
+  "compilerOptions": {...},
+    // the plugin options
+    "parcelAngularOptions": {
+      // What compiler should we use when watching or serving
+      "watch": "jit",
+
+      // What compiler should we use when building (parcel build)
+      "build": "aot"
+    }
+  }
+  ```
+
 <a name="0.2.5"></a>
 # [0.2.5](https://github.com/fathyb/parcel-plugin-typescript/compare/v0.2.4...v0.2.5) (2017-12-21)
 
@@ -20,31 +51,31 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 - **Angular**
-	- Compilation using AOT compiler
-	- Support lazy-loading (AOT only)
-	- Preprocess templates and style using Parcel (`templateUrl` or `styleUrls` only)
-	- Experimental incremental AOT build on watch mode
-	- Decorators are removed in AOT for smaller builds
+  - Compilation using AOT compiler
+  - Support lazy-loading (AOT only)
+  - Preprocess templates and style using Parcel (`templateUrl` or `styleUrls` only)
+  - Experimental incremental AOT build on watch mode
+  - Decorators are removed in AOT for smaller builds
 - **Options**: you can now pass options to the plugin in `tsconfig.json`:
   ```js
   {
-	  "compilerOptions": {
-		  "strict": true
-	  },
-	  // the plugin options
-	  "parcelTsPluginOptions": {
-			// If true type-checking is disabled
-			"transpileOnly": false,
-			
-			// Angular options
-			"angular": {
-				// What compiler should we use when watching or serving
-				"watch": "jit",
+    "compilerOptions": {
+      "strict": true
+    },
+    // the plugin options
+    "parcelTsPluginOptions": {
+      // If true type-checking is disabled
+      "transpileOnly": false,
+      
+      // Angular options
+      "angular": {
+        // What compiler should we use when watching or serving
+        "watch": "jit",
 
-				// What compiler should we use when building (parcel build)
-				"build": "aot"
-			}
-	  }
+        // What compiler should we use when building (parcel build)
+        "build": "aot"
+      }
+    }
   }
   ```
 
