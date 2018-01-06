@@ -33,7 +33,7 @@ function makeClient<RQ, RS, K extends Keys<RQ, RS> = Keys<RQ, RS>>(name: string,
 	return object as Client<RQ, RS>
 }
 
-// This is when I dream about type introspection
+// TODO: use type introspection
 export const IPCClient = makeClient<ServerRequest, ServerResponse>('angular', [
 	'compile', 'typeCheck', 'processResource', 'readVirtualFile'
 ])
