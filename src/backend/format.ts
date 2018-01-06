@@ -7,13 +7,14 @@ import {Diagnostic} from '@angular/compiler-cli/src/transformers/api'
 import {codeFrameColumns, Location} from '@babel/code-frame'
 
 import chalk from 'chalk'
+import lineColumn = require('line-column')
 import normalizePath = require('normalize-path')
 import * as ts from 'typescript'
 
 export function formatDiagnostics(diagnostics: Array<ts.Diagnostic|Diagnostic>, context: string): string {
 	return diagnostics.map(diagnostic => {
 		if(diagnostic.source === 'angular') {
-			console.log(diagnostic)
+			return formatAngularDiagnostic(diagnostic as Diagnostic, context)
 		}
 		else {
 			return formatTypeScriptDiagnostic(diagnostic as ts.Diagnostic, context)
@@ -66,6 +67,72 @@ function formatTypeScriptDiagnostic(diagnostic: ts.Diagnostic, context: string) 
 	}
 
 	return message + EOL
+}
+
+function formatAngularDiagnostic(diag: Diagnostic, context: string) {
+	const diagnostic = diag as Diagnostic & {
+		file?: {text: string, fileName: string}
+		start?: number
+		length?: number
+	}
+	const messageText = formatDiagnosticMessage(diagnostic.messageText, '', context)
+	const {file, span} = diagnostic
+
+	interface LineColumn {line: number, col: number}
+	let fileName: string|null = null
+	let source: string|null = null
+	let start: LineColumn|null = null
+	let end: LineColumn|null = null
+
+	if(file && typeof diagnostic.start === 'number' && typeof diagnostic.length === 'number') {
+		source = file.text
+		fileName = file.fileName
+		start = lineColumn(source, diagnostic.start)
+		end = lineColumn(source, diagnostic.start + diagnostic.length)
+	}
+	else if(span) {
+		source = span.start.file.content
+		fileName = span.start.file.url
+		start = span.start
+		end = span.end
+
+		start.line++
+		start.col++
+		end.line++
+		end.col++
+	}
+	else {
+		return
+	}
+
+	const location: Location = {
+		start: {
+			line: start.line ,
+			column: start.col
+		},
+		end: {
+			line: end.line,
+			column: end.col
+		}
+	}
+	const red = chalk.red(`🚨  ${fileName}(${start.line},${start.col})`)
+
+	const messages = [`${red}\n${chalk.redBright(messageText)}`]
+
+	const frame = codeFrameColumns(source, location, {
+		linesAbove: 1,
+		linesBelow: 1,
+		highlightCode: true
+	})
+
+	messages.push(
+		frame
+			.split('\n')
+			.map(str => `  ${str}`)
+			.join('\n')
+	)
+
+	return messages.join('\n') + EOL
 }
 
 function replaceAbsolutePaths(message: string, context: string) {

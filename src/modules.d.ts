@@ -53,6 +53,14 @@ declare module 'parcel-bundler/lib/assets/HTMLAsset' {
 declare module 'normalize-path'
 declare module 'posthtml-parser'
 declare module 'posthtml/lib/api'
+declare module 'line-column' {
+	function lineColumn(str: string, index: number): {
+		line: number
+		col: number
+	}
+
+	export = lineColumn
+}
 
 declare module '@babel/code-frame' {
 	export interface LineAndColumn {

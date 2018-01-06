@@ -2,12 +2,14 @@
 
 Complete Angular support for Parcel and TypeScript.
 
+![screenshot](.assets/screenshot.png)
+
 ## Features
 
 - [`parcel-plugin-typescript` features](https://github.com/fathyb/parcel-plugin-typescript#features)
-- AOT compilation, using the official Angular compiler for smaller and faster applications.
-- Lazy Loading, the plugin automagically splits your Angular modules in multiple JavaScript files with Parcel when you use lazy routes.
-- Template and style parsing, your templates and style are processed by Parcel to find and replaces resources.
+- AOT compilation : using the official Angular compiler for smaller and faster applications.
+- Lazy Loading : the plugin automagically splits your Angular modules in multiple JavaScript files with Parcel when you use lazy routes.
+- Template and style parsing : your templates and style are processed by Parcel to find and replace resources.
 - Transformations (based on [`angular/angular-cli`](https://github.com/angular/angular-cli) transformers) :
 	- It removes all your Angular decorators in AOT mode for smaller bundles
 	- It replaces JIT bootstrap code with AOT when it's used. You can keep one main file using the `@angular/platform-browser-dynamic` module, see [Entry file](#entry-file)
