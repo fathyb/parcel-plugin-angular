@@ -3028,9 +3028,9 @@ parcel-bundler@^1.2.0:
     worker-farm "^1.4.1"
     ws "^3.3.3"
 
-parcel-plugin-typescript@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/parcel-plugin-typescript/-/parcel-plugin-typescript-0.4.0.tgz#f0310dd69bbdd1fc12d6b5d1547439a8195fb82a"
+parcel-plugin-typescript@0.4.2-next.3:
+  version "0.4.2-next.3"
+  resolved "https://registry.yarnpkg.com/parcel-plugin-typescript/-/parcel-plugin-typescript-0.4.2-next.3.tgz#5a898f6f007866709ba8ad67f750c3ba7e64c2cc"
   dependencies:
     "@babel/code-frame" "^7.0.0-beta.34"
     body-parser "^1.18.2"
@@ -3039,10 +3039,9 @@ parcel-plugin-typescript@^0.4.0:
     express "^4.16.2"
     find-up "^2.1.0"
     normalize-path "^2.1.1"
-    request "^2.34"
-    request-promise "^4.2.2"
     tmp "^0.0.33"
     tslib "^1.8.1"
+    uuid "^3.1.0"
 
 parse-asn1@^5.0.0:
   version "5.1.0"

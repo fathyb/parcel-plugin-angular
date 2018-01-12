@@ -1,6 +1,3 @@
-// This is directly copy-pasted from https://github.com/zinserjan/ts-diagnostic-formatter
-// The original code throws errors because of es6-error
-
 import {EOL} from 'os'
 
 import {Diagnostic} from '@angular/compiler-cli/src/transformers/api'
@@ -12,14 +9,21 @@ import normalizePath = require('normalize-path')
 import * as ts from 'typescript'
 
 export function formatDiagnostics(diagnostics: Array<ts.Diagnostic|Diagnostic>, context: string): string {
-	return diagnostics.map(diagnostic => {
+	const diags = diagnostics.map(diagnostic => {
 		if(diagnostic.source === 'angular') {
 			return formatAngularDiagnostic(diagnostic as Diagnostic, context)
 		}
 		else {
 			return formatTypeScriptDiagnostic(diagnostic as ts.Diagnostic, context)
 		}
-	}).join(EOL) + EOL
+	})
+
+	if(diags.length > 0) {
+		return diags.join(EOL) + EOL
+	}
+	else {
+		return ''
+	}
 }
 
 function formatTypeScriptDiagnostic(diagnostic: ts.Diagnostic, context: string) {

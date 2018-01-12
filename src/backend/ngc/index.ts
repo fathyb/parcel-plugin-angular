@@ -82,11 +82,17 @@ export class AngularCompiler {
 			this.program = program
 			this.shouldEmit = true
 
-			changedFiles.splice(0)
+			const resource = changedFiles.find(file => !/\.ts$/.test(file))
 
-			Object.keys(host.store['sources']).forEach(key => {
-				delete host.store['sources'][key]
-			})
+			if(resource) {
+				Object.keys(host.store['sources']).forEach(key => {
+					if(!/node_modules/.test(key)) {
+						delete host.store['sources'][key]
+					}
+				})
+			}
+
+			changedFiles.splice(0)
 
 			await program.loadNgStructureAsync()
 
@@ -139,14 +145,19 @@ export class AngularCompiler {
 				}
 			})
 
-			diagnostics.push(
-				...program.getTsSemanticDiagnostics(),
-				...program.getTsSyntacticDiagnostics(),
-				...program.getNgSemanticDiagnostics()
-			)
-			diagnostics.push(...result.diagnostics)
-
-			reportDiagnostics(diagnostics)
+			reportDiagnostics([
+				diagnostics,
+				program
+					.getTsSemanticDiagnostics()
+					.filter(diag =>
+						typeof diag.messageText === 'string'
+							? !/^Module '"|'[^('|")]+\.ngfactory'|"' has no exported member '[^']+NgFactory'./.test(diag.messageText)
+							: true
+					),
+				program.getTsSyntacticDiagnostics(),
+				program.getNgSemanticDiagnostics(),
+				result.diagnostics
+			].reduce((a, b) => a.concat(b), []))
 
 			this.shouldEmit = false
 		}

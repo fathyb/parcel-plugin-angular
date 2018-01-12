@@ -1,6 +1,6 @@
 {
   "name": "parcel-plugin-angular",
-  "version": "0.5.0",
+  "version": "0.5.1-next.4",
   "description": "Angular support for Parcel bundler",
   "author": "Fathy Boundjadj <fathy.boundjadj@gmail.com>",
   "license": "MIT",
@@ -29,7 +29,7 @@
     "find-up": "^2.1.0",
     "line-column": "^1.0.2",
     "normalize-path": "^2.1.1",
-    "parcel-plugin-typescript": "^0.4.0",
+    "parcel-plugin-typescript": "0.4.2-next.3",
     "posthtml": "^0.11.0",
     "posthtml-parser": "~0.3.0",
     "request": "^2.34",
