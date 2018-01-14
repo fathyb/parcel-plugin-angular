@@ -82,6 +82,28 @@ export interface SourceFileStyleResource {
 
 export type SourceFileResource = SourceFileTemplateResource | SourceFileStyleResource
 
+/*
+export function findInlineResources(sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker) {
+	return collectDeepNodes<ts.ObjectLiteralExpression>(sourceFile, ts.SyntaxKind.ObjectLiteralExpression)
+		.map(node => collectDeepNodes<ts.PropertyAssignment>(node, ts.SyntaxKind.PropertyAssignment))
+		.reduce((prev, curr) => curr ? prev.concat(curr) : prev, [])
+		.map(node => ({
+			node, key: getContentOfKeyLiteral(node.name)!
+		}))
+		.filter(({key}) => {
+			if(!key) {
+				return false
+			}
+
+			return key === 'template' || key === 'styles'
+		})
+		.map(({node, key}) => {
+			if(ts.isExpressionStatement(node)) {
+				typeChecker.getContextualType(node.expression)!.getProperties()[0].valueDeclaration
+			}
+		})
+}*/
+
 export function findResources(sourceFile: ts.SourceFile): SourceFileResource[] {
 	// Find all object literals.
 	return collectDeepNodes<ts.ObjectLiteralExpression>(sourceFile, ts.SyntaxKind.ObjectLiteralExpression)

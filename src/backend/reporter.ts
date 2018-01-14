@@ -9,6 +9,8 @@ export function reportDiagnostics(diagnostics: Diagnostic[]): void {
 	if(diagnostics.length > 0 ) {
 		const frame = formatDiagnostics(diagnostics, process.cwd())
 
-		console.error(frame)
+		if(frame.trim().length > 0) {
+			console.error(frame)
+		}
 	}
 }

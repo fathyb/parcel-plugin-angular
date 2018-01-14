@@ -32,4 +32,6 @@ export = (bundler: any) => {
 
 	bundler.addAssetType('ts', tsAsset)
 	bundler.addAssetType('tsx', tsAsset)
+
+	process.env['PARCEL_PLUGIN_TYPESCRIPT_DISABLE'] = 'true'
 }

@@ -16,24 +16,34 @@ export interface CompileResult<R = Resources> {
 	resources: R
 }
 
-export interface WorkerRequest {
+export interface Request {
 	typeCheck: CompileRequest
 	compile: CompileRequest
 	readVirtualFile: string
 	invalidate: string[]
 }
 
-export interface WorkerResponse<R = string[]> {
+export interface Response<R = string[]> {
 	typeCheck: void
 	compile: CompileResult<R>
 	readVirtualFile: string|null
 	invalidate: void
 }
 
-export interface ServerRequest extends WorkerRequest {
+export interface ServerRequest extends Request {
 	processResource: string
 }
 
-export interface ServerResponse extends WorkerResponse<Resources> {
+export interface ServerResponse extends Response<Resources> {
 	processResource: string
+}
+
+export interface WorkerRequest extends Request {
+	wait: void
+	getFactories: void
+}
+
+export interface WorkerResponse extends Response {
+	wait: void
+	getFactories: string[]
 }

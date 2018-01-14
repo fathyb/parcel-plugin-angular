@@ -1,6 +1,6 @@
 import {dirname, relative} from 'path'
 
-import {Program} from '@angular/compiler-cli/src/ngtools_api2'
+import {Program} from '@angular/compiler-cli/src/transformers/api'
 
 function parseNgModule(path: string): string {
 	return `${path.replace(/#[^]*$/, '').replace(/\.ts$/, '')}.ngfactory`

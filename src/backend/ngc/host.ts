@@ -14,6 +14,7 @@ export class AngularCompilerHost extends LocalCompilerHost implements CompilerHo
 
 	public readResource(path: string) {
 		return this.compileResource(path).catch(err => {
+			// TODO: handle this
 			console.log('\n\n')
 			console.log('Compile error', err)
 			console.log('\n\n')

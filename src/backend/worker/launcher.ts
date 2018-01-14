@@ -8,6 +8,8 @@ import {IPCClient} from './client'
 const compilers = new Map<string, Promise<AngularCompiler>>()
 const services = new Map<string, Promise<LanguageService>>()
 
+const store = FileStore.shared()
+
 function getCompiler(tsConfig: string): Promise<AngularCompiler> {
 	let compiler = compilers.get(tsConfig)
 
@@ -43,11 +45,25 @@ const handler: Handler<WorkerRequest, WorkerResponse> = {
 	async typeCheck({file, tsConfig}) {
 		const service = await getService(tsConfig)
 
-		return service.check(file)
+		// TODO: support noEmitOnError
+		await service.check(file, true)
+	},
+	async wait() {
+		await Promise.all(
+			Array
+				.from(compilers.values())
+				.map(promise =>
+					promise.then(compiler =>
+						compiler.loop.wait()
+					)
+				)
+		)
 	},
 	async readVirtualFile(file) {
 		try {
-			return FileStore.shared().readFile(file) || null
+			await handler.wait(undefined)
+
+			return store.readFile(file) || null
 		}
 		catch {
 			return null
@@ -55,8 +71,23 @@ const handler: Handler<WorkerRequest, WorkerResponse> = {
 	},
 	async invalidate(files: string[]) {
 		for(const file of files) {
-			FileStore.shared().invalidate(file)
+			store.invalidate(file)
 		}
+	},
+	async getFactories() {
+		await Promise.all(
+			Array
+				.from(compilers.values())
+				.map(promise =>
+					promise.then(compiler =>
+						compiler.loop.waitCurrentOrNext()
+					)
+				)
+		)
+
+		return store
+			.getFiles()
+			.filter(file => /\.ng(factory)|(style)\.js$/.test(file))
 	}
 }
 

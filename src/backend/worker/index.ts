@@ -6,8 +6,9 @@ import {
 } from '../../interfaces'
 
 import {getFileResources, processResource} from '../../frontend/loaders/template'
+import {getWatcher} from '../../utils/get-watcher'
 
-export class TypeScriptWorker extends Worker<WorkerRequest, WorkerResponse> {
+export class AngularWorker extends Worker<WorkerRequest, WorkerResponse> {
 	public readonly resources: Map<string, string[]>
 	private readonly bundler: any
 
@@ -19,6 +20,18 @@ export class TypeScriptWorker extends Worker<WorkerRequest, WorkerResponse> {
 
 		this.bundler = bundler
 		this.resources = new Map()
+	}
+
+	public async getFactories(file: string): Promise<string[]> {
+		try {
+			const factories = await this.request('getFactories', undefined)
+			const base = file.replace(/\.tsx?/, '')
+
+			return factories.filter(factory => factory.indexOf(base) === 0)
+		}
+		catch {
+			return []
+		}
 	}
 
 	@HandlerMethod
@@ -74,35 +87,55 @@ export class TypeScriptWorker extends Worker<WorkerRequest, WorkerResponse> {
 }
 
 export class AngularServer extends Server<ServerRequest, ServerResponse> {
-	private readonly worker: TypeScriptWorker
+	private readonly worker: AngularWorker
 
 	constructor(bundler: any) {
-		const worker = new TypeScriptWorker(bundler)
+		const worker = new AngularWorker(bundler)
 
 		super('angular', worker)
 
 		this.worker = worker
 
-		process.nextTick(() => {
-			if(bundler.watcher) {
-				bundler.watcher.on('change', (file: string) => {
-					const deps = worker.resources.get(file)
-					const files = [file]
-
-					if(deps) {
-						files.push(...deps)
-					}
-
-					// TODO: batch this
-					worker.invalidate(files)
-				})
-			}
-		})
+		this.watch(bundler)
 	}
 
 	public close() {
 		this.worker.kill()
 
 		super.close()
+	}
+
+	private async watch(bundler: any) {
+		const watcher = await getWatcher(bundler)
+
+		if(!watcher) {
+			return
+		}
+
+		const {worker} = this
+
+		watcher.on('change', async (file: string) => {
+			const deps = worker.resources.get(file)
+			const files: string[] = []
+
+			worker.invalidate([file])
+
+			if(deps) {
+				files.push(...deps)
+			}
+
+			files.forEach(depFile => bundler.onChange(depFile))
+
+			const factories = await Promise.all(
+				files.map(depFile => worker.getFactories(depFile))
+			)
+
+			factories
+				.reduce((a, b) => a.concat(b), [])
+				.forEach(factory => bundler.onChange(factory))
+
+			// TODO: batch this
+			worker.invalidate(files)
+		})
 	}
 }

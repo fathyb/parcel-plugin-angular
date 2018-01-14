@@ -1,6 +1,6 @@
 {
   "name": "parcel-plugin-angular",
-  "version": "0.5.1-next.4",
+  "version": "0.5.1-next.10",
   "description": "Angular support for Parcel bundler",
   "author": "Fathy Boundjadj <fathy.boundjadj@gmail.com>",
   "license": "MIT",
@@ -20,7 +20,8 @@
     "@angular/compiler": "^5.1.0",
     "@angular/compiler-cli": "^5.1.0",
     "parcel-bundler": "^1.1.0",
-    "typescript": ">=2.4.2 <2.6"
+	"typescript": ">=2.4.2 <2.6",
+    "parcel-plugin-typescript": "^0.5.1"
   },
   "dependencies": {
     "@babel/code-frame": "^7.0.0-beta.34",
@@ -29,7 +30,6 @@
     "find-up": "^2.1.0",
     "line-column": "^1.0.2",
     "normalize-path": "^2.1.1",
-    "parcel-plugin-typescript": "0.4.2-next.3",
     "posthtml": "^0.11.0",
     "posthtml-parser": "~0.3.0",
     "request": "^2.34",
@@ -50,6 +50,7 @@
     "husky": "^0.14.3",
     "npm-run-all": "^4.1.2",
     "parcel-bundler": "^1.2.0",
+    "parcel-plugin-typescript": "^0.5.1",
     "standard-version": "^4.2.0",
     "tslint": "^5.8.0",
     "tslint-eslint-rules": "^4.1.1",
